@@ -1,0 +1,31 @@
+# gotenberg 
+version: "2"
+ 
+services:
+  gotenberg:
+    # image: gotenberg/gotenberg:8
+    image: registry.megavn.net/gotenberg/gotenberg:8
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: build/Dockerfile
+      args:
+        - GOTENBERG_VERSION=edge
+        - DOCKER_REGISTRY=gotenberg
+        - DOCKER_REPOSITORY=gotenberg
+        - GOLANG_VERSION=1.23
+        - GOTENBERG_USER_GID=1001
+        - GOTENBERG_USER_UID=1001
+        - NOTO_COLOR_EMOJI_VERSION=v2.047
+        - PDFTK_VERSION=v3.3.3
+    command:
+      - "gotenberg"
+      - "--api-timeout=300s"
+      - "--log-level=debug"
+      - "--libreoffice-auto-start=true"
+    ports:
+      - 3000:3000
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    # mem_limit: 2G
+    cpus: 2
