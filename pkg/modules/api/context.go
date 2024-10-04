@@ -271,6 +271,16 @@ func newContext(echoCtx echo.Context, logger *zap.Logger, fs *gotenberg.FileSyst
 				}
 
 				contentDisposition := resp.Header.Get("Content-Disposition")
+
+				if contentDisposition == "" && strings.Index(dl.Url, "#") != -1 {
+					_filename := dl.Url[strings.Index(dl.Url, "#")+1:]
+					contentDisposition = "attachement; filename=\"" + _filename + "\""
+				}
+
+				if contentDisposition == "" {
+					contentDisposition = "attachement; filename=\"" + filepath.Base(dl.Url) + "\""
+				}
+
 				if contentDisposition == "" {
 					return WrapError(
 						fmt.Errorf("no 'Content-Disposition' header from '%s'", dl.Url),
