@@ -272,13 +272,20 @@ func newContext(echoCtx echo.Context, logger *zap.Logger, fs *gotenberg.FileSyst
 
 				contentDisposition := resp.Header.Get("Content-Disposition")
 
-				if contentDisposition == "" && strings.Index(dl.Url, "#") != -1 {
-					_filename := dl.Url[strings.Index(dl.Url, "#")+1:]
-					contentDisposition = "attachement; filename=\"" + _filename + "\""
+				_filename := ""
+				if (contentDisposition == "" || !strings.Contains(contentDisposition, "filename")) && strings.Contains(dl.Url, "#") {
+					_filename = dl.Url[strings.Index(dl.Url, "#")+1:]
+					if strings.Contains(_filename, ".") {
+						contentDisposition = "attachement; filename=\"" + _filename + "\""
+						dl.Url = dl.Url[:strings.Index(dl.Url, "#")]
+					}
 				}
 
-				if contentDisposition == "" {
-					contentDisposition = "attachement; filename=\"" + filepath.Base(dl.Url) + "\""
+				if contentDisposition == "" || !strings.Contains(contentDisposition, "filename") {
+					_filename = filepath.Base(dl.Url)
+					if strings.Contains(_filename, ".") {
+						contentDisposition = "attachement; filename=\"" + _filename + "\""
+					}
 				}
 
 				if contentDisposition == "" {
