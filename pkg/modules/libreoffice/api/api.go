@@ -390,6 +390,9 @@ func (a *Api) Pdf(ctx context.Context, logger *zap.Logger, inputPath, outputPath
 		return a.Pdf(ctx, logger, inputPath, outputPath, options)
 	}
 
+	a.supervisor.Shutdown()
+	a.supervisor.Launch()
+
 	return fmt.Errorf("supervisor run task: %w", err)
 }
 
